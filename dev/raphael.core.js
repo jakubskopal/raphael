@@ -2716,14 +2716,15 @@
     addEvent = (function () {
         if (g.doc.addEventListener) {
             return function (obj, type, fn, element) {
-                var f = function (e) {
+                var _f = null,
+                    f = function (e) {
                     var pos = getEventPosition(e);
                     return fn.call(element, e, pos.x, pos.y);
                 };
                 obj.addEventListener(type, f, false);
 
                 if (supportsTouch && touchMap[type]) {
-                    var _f = function (e) {
+                    _f = function (e) {
                         var pos = getEventPosition(e),
                             olde = e;
 
@@ -2744,10 +2745,7 @@
 
                 return function () {
                     obj.removeEventListener(type, f, false);
-
-                    if (supportsTouch && touchMap[type])
-                        obj.removeEventListener(touchMap[type], f, false);
-
+                    _f && obj.removeEventListener(touchMap[type], _f, false);
                     return true;
                 };
             };
